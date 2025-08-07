@@ -1,0 +1,396 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  color: white;
+  overflow: hidden;
+}
+
+.game-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ゲーム情報表示 */
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.player-info {
+  flex: 1;
+  text-align: center;
+}
+
+.player-name {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #ffd700;
+}
+
+.health-bar {
+  width: 200px;
+  height: 20px;
+  background: #333;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 5px auto;
+}
+
+.health {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #ff0000, #ff4444);
+  transition: width 0.3s ease;
+  border-radius: 8px;
+}
+
+.wins {
+  font-size: 14px;
+  color: #ccc;
+}
+
+.round-info {
+  flex: 1;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.round-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 5px;
+}
+
+.timer {
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff4444;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* ゲーム画面 */
+.game-screen {
+  position: relative;
+  border: 3px solid #ffd700;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #87ceeb 0%, #98fb98 50%, #8fbc8f 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+#gameCanvas {
+  display: block;
+  background: linear-gradient(180deg, #87ceeb 0%, #98fb98 50%, #8fbc8f 100%);
+  border-radius: 7px;
+}
+
+/* 操作説明 */
+.controls {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 800px;
+  padding: 10px;
+  margin-top: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+}
+
+.control-section {
+  text-align: center;
+  padding: 10px;
+}
+
+.control-section h3 {
+  color: #ffd700;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.control-section p {
+  font-size: 12px;
+  margin: 2px 0;
+  color: #ccc;
+}
+
+/* ゲーム結果表示 */
+.game-result {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.result-text {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 30px;
+  text-shadow: 3px 3px 6px rgba(0,0,0,0.8);
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  from { text-shadow: 3px 3px 6px rgba(255,215,0,0.5); }
+  to { text-shadow: 3px 3px 20px rgba(255,215,0,1); }
+}
+
+.restart-btn {
+  padding: 15px 30px;
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff4444, #ff6666);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.restart-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.4);
+}
+
+/* ラウンド結果表示 */
+.round-result {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.9);
+  padding: 20px 40px;
+  border-radius: 15px;
+  border: 3px solid #ffd700;
+  z-index: 999;
+}
+
+.round-result-text {
+  font-size: 36px;
+  font-weight: bold;
+  color: #ffd700;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .game-info {
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px;
+  }
+  
+  .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-direction: row;
+      justify-content: space-between;
+  }
+  
+  .health-bar {
+      width: 150px;
+      margin: 0;
+  }
+  
+  .round-info {
+      order: -1;
+      padding: 0;
+      margin-bottom: 10px;
+  }
+  
+  .round-text {
+      font-size: 20px;
+  }
+  
+  .timer {
+      font-size: 24px;
+  }
+  
+  #gameCanvas {
+      width: 100%;
+      max-width: 100vw;
+      height: auto;
+  }
+  
+  .controls {
+      flex-direction: column;
+      gap: 10px;
+      max-height: 120px;
+      overflow-y: auto;
+  }
+  
+  .control-section p {
+      font-size: 10px;
+  }
+  
+  .result-text {
+      font-size: 32px;
+  }
+  
+  .round-result-text {
+      font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-name {
+      font-size: 14px;
+  }
+  
+  .health-bar {
+      width: 120px;
+      height: 15px;
+  }
+  
+  .wins {
+      font-size: 12px;
+  }
+  
+  .round-text {
+      font-size: 16px;
+  }
+  
+  .timer {
+      font-size: 20px;
+  }
+  
+  .control-section h3 {
+      font-size: 14px;
+  }
+  
+  .control-section p {
+      font-size: 9px;
+  }
+}
+
+/* タッチコントロール（スマホ用） */
+.touch-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  z-index: 1000;
+}
+
+.player-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-controls h4 {
+  color: #ffd700;
+  margin: 0;
+  font-size: 14px;
+}
+
+.control-pad {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.middle-row {
+  display: flex;
+  gap: 5px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.touch-controls button {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #ffd700;
+  background: rgba(255, 215, 0, 0.2);
+  color: white;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  transition: all 0.1s;
+}
+
+.touch-controls button:active,
+.touch-controls button.pressed {
+  background: rgba(255, 215, 0, 0.6);
+  transform: scale(0.95);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.btn-punch,
+.btn-kick {
+  width: 50px !important;
+  height: 35px !important;
+  font-size: 10px !important;
+}
+
+/* 特別なボタンスタイル */
+.btn-up {
+  background: rgba(0, 255, 0, 0.2) !important;
+  border-color: #00ff00 !important;
+}
+
+.btn-punch {
+  background: rgba(255, 0, 0, 0.2) !important;
+  border-color: #ff0000 !important;
+}
+
+.btn-kick {
+  background: rgba(0, 0, 255, 0.2) !important;
+  border-color: #0000ff !important;
+}
+
+/* スマホでのコントロール説明を隠す */
+@media (max-width: 768px) {
+  .controls {
+      display: none;
+  }
+}
+
+/* デスクトップではタッチコントロールを隠す */
+@media (min-width: 769px) {
+  .touch-controls {
+      display: none;
+  }
+}
