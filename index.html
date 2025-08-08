@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <audio id="bgm" src="audio/kakuge.mp3" loop></audio>
     <div class="game-container">
         <!-- ゲーム情報表示 -->
         <div class="game-info" id="game-info" style="display: none;">
@@ -118,6 +119,7 @@
         // ゲーム設定
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const bgm = document.getElementById('bgm');
 
         // ゲーム状態
         let gameState = {
@@ -756,7 +758,11 @@
             document.querySelector('.pause-btn').style.display = 'block';
             document.querySelector('.fullscreen-btn').style.display = 'block';
             document.querySelector('.settings-btn').style.display = 'block';
-            
+            if (bgm) {
+                bgm.currentTime = 0;
+                bgm.play();
+            }
+
             // キャンバスサイズ調整
             resizeCanvas();
             
