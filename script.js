@@ -1,6 +1,7 @@
 // ゲーム設定
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+const bgm = document.getElementById('bgm');
 
 // ゲーム状態
 let gameState = {
@@ -872,6 +873,10 @@ function initGame() {
 function startGame() {
     const startScreen = document.getElementById('start-screen');
     startScreen.style.display = 'none';
+    if (bgm) {
+        bgm.currentTime = 0;
+        bgm.play();
+    }
     initGame();
 }
 
@@ -880,12 +885,14 @@ window.addEventListener('resize', resizeCanvas);
 
 // ページ読み込み完了後に初期表示を準備
 document.addEventListener('DOMContentLoaded', () => {
-    // 初期状態ではゲームを開始しない
     const volumeSlider = document.getElementById('volume-slider');
     const volumeValue = document.getElementById('volume-value');
-    volumeSlider.addEventListener('input', () => {
-        volumeValue.textContent = volumeSlider.value;
-    });
+    if (volumeSlider && volumeValue) {
+        volumeSlider.addEventListener('input', () => {
+            volumeValue.textContent = volumeSlider.value;
+            if (bgm) bgm.volume = volumeSlider.value;
+        });
+    }
 });
 
 function pauseGame() {
