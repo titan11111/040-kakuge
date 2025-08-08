@@ -869,11 +869,55 @@ function initGame() {
     gameLoop();
 }
 
+function startGame() {
+    const startScreen = document.getElementById('start-screen');
+    startScreen.style.display = 'none';
+    initGame();
+}
+
 // ウィンドウリサイズ対応
 window.addEventListener('resize', resizeCanvas);
 
-// ページ読み込み完了後にゲーム開始
-document.addEventListener('DOMContentLoaded', initGame);
+// ページ読み込み完了後に初期表示を準備
+document.addEventListener('DOMContentLoaded', () => {
+    // 初期状態ではゲームを開始しない
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeValue = document.getElementById('volume-value');
+    volumeSlider.addEventListener('input', () => {
+        volumeValue.textContent = volumeSlider.value;
+    });
+});
+
+function pauseGame() {
+    if (gameState.paused || gameState.gameOver) return;
+    gameState.paused = true;
+    document.getElementById('pause-screen').style.display = 'flex';
+}
+
+function resumeGame() {
+    gameState.paused = false;
+    document.getElementById('pause-screen').style.display = 'none';
+}
+
+function backToMenu() {
+    location.reload();
+}
+
+function openSettings() {
+    document.getElementById('settings-panel').style.display = 'flex';
+}
+
+function closeSettings() {
+    document.getElementById('settings-panel').style.display = 'none';
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
 
 // デバッグモード（開発用）
 let debugMode = false;
