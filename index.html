@@ -136,6 +136,10 @@
         // キー入力状態
         const keys = {};
 
+        // モバイル操作関連
+        let touchControls = null;
+        let mobileMode = false;
+
         // プレイヤークラス
         class Player {
             constructor(x, y, color, controls, name, facing = 1) {
@@ -793,8 +797,15 @@
         }
 
         function openSettings() {
-            // 設定パネルがないので何もしない
-            console.log('設定機能は実装予定です');
+            mobileMode = !mobileMode;
+            if (mobileMode) {
+                if (!touchControls) {
+                    setupTouchControls();
+                }
+                touchControls.style.display = 'flex';
+            } else if (touchControls) {
+                touchControls.style.display = 'none';
+            }
         }
 
         function toggleFullscreen() {
@@ -834,10 +845,11 @@
 
         // スマホ用タッチコントロール
         function setupTouchControls() {
-            if (window.innerWidth <= 768) {
-                const touchControls = document.createElement('div');
-                touchControls.className = 'touch-controls';
-                touchControls.innerHTML = `
+            if (touchControls) return;
+            touchControls = document.createElement('div');
+            touchControls.className = 'touch-controls';
+            touchControls.style.display = 'none';
+            touchControls.innerHTML = `
                     <div class="player-controls">
                         <h4>プレイヤー1</h4>
                         <div class="control-pad">
@@ -853,7 +865,7 @@
                             <button class="btn-kick" data-key="KeyK">キック</button>
                         </div>
                     </div>
-                    
+
                     <div class="player-controls">
                         <h4>プレイヤー2</h4>
                         <div class="control-pad">
@@ -870,26 +882,25 @@
                         </div>
                     </div>
                 `;
-                
-                document.body.appendChild(touchControls);
-                
-                const buttons = touchControls.querySelectorAll('button');
-                buttons.forEach(button => {
-                    button.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        const key = button.getAttribute('data-key');
-                        keys[key] = true;
-                        button.classList.add('pressed');
-                    });
-                    
-                    button.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        const key = button.getAttribute('data-key');
-                        keys[key] = false;
-                        button.classList.remove('pressed');
-                    });
+
+            document.body.appendChild(touchControls);
+
+            const buttons = touchControls.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    const key = button.getAttribute('data-key');
+                    keys[key] = true;
+                    button.classList.add('pressed');
                 });
-            }
+
+                button.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    const key = button.getAttribute('data-key');
+                    keys[key] = false;
+                    button.classList.remove('pressed');
+                });
+            });
         }
     </script>
 

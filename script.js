@@ -17,6 +17,10 @@ let gameState = {
 // キー入力状態
 const keys = {};
 
+// モバイル操作関連
+let touchControls = null;
+let mobileMode = false;
+
 // プレイヤークラス
 class Player {
     constructor(x, y, color, controls, name, facing = 1) {
@@ -638,9 +642,12 @@ function restartGame() {
 
 // タッチ操作対応（スマホ用）
 function setupTouchControls() {
+    if (touchControls) return;
+
     // 仮想ボタンを作成
-    const touchControls = document.createElement('div');
+    touchControls = document.createElement('div');
     touchControls.className = 'touch-controls';
+    touchControls.style.display = 'none';
     touchControls.innerHTML = `
         <div class="player-controls" id="player1-touch">
             <h4>Player 1</h4>
@@ -657,7 +664,7 @@ function setupTouchControls() {
                 <button class="btn-kick" data-key="KeyK">キック</button>
             </div>
         </div>
-        
+
         <div class="player-controls" id="player2-touch">
             <h4>Player 2</h4>
             <div class="control-pad">
@@ -674,44 +681,41 @@ function setupTouchControls() {
             </div>
         </div>
     `;
-    
-    // スマホの場合のみタッチコントロールを表示
-    if (window.innerWidth <= 768) {
-        document.body.appendChild(touchControls);
-        
-        // タッチイベント追加
-        const buttons = touchControls.querySelectorAll('button');
-        buttons.forEach(button => {
-            button.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                const key = button.getAttribute('data-key');
-                keys[key] = true;
-                button.classList.add('pressed');
-            });
-            
-            button.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                const key = button.getAttribute('data-key');
-                keys[key] = false;
-                button.classList.remove('pressed');
-            });
-            
-            // マウスイベントも追加（デバッグ用）
-            button.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                const key = button.getAttribute('data-key');
-                keys[key] = true;
-                button.classList.add('pressed');
-            });
-            
-            button.addEventListener('mouseup', (e) => {
-                e.preventDefault();
-                const key = button.getAttribute('data-key');
-                keys[key] = false;
-                button.classList.remove('pressed');
-            });
+
+    document.body.appendChild(touchControls);
+
+    // タッチイベント追加
+    const buttons = touchControls.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const key = button.getAttribute('data-key');
+            keys[key] = true;
+            button.classList.add('pressed');
         });
-    }
+
+        button.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            const key = button.getAttribute('data-key');
+            keys[key] = false;
+            button.classList.remove('pressed');
+        });
+
+        // マウスイベントも追加（デバッグ用）
+        button.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const key = button.getAttribute('data-key');
+            keys[key] = true;
+            button.classList.add('pressed');
+        });
+
+        button.addEventListener('mouseup', (e) => {
+            e.preventDefault();
+            const key = button.getAttribute('data-key');
+            keys[key] = false;
+            button.classList.remove('pressed');
+        });
+    });
 }
 
 // キャンバスサイズ調整
@@ -911,11 +915,15 @@ function backToMenu() {
 }
 
 function openSettings() {
-    document.getElementById('settings-panel').style.display = 'flex';
-}
-
-function closeSettings() {
-    document.getElementById('settings-panel').style.display = 'none';
+    mobileMode = !mobileMode;
+    if (mobileMode) {
+        if (!touchControls) {
+            setupTouchControls();
+        }
+        touchControls.style.display = 'flex';
+    } else if (touchControls) {
+        touchControls.style.display = 'none';
+    }
 }
 
 function toggleFullscreen() {
