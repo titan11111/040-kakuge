@@ -11,7 +11,8 @@ let gameState = {
     player2Wins: 0,
     gameOver: false,
     roundOver: false,
-    paused: false
+    paused: false,
+    cpu: false
 };
 
 // キー入力状態
@@ -19,7 +20,7 @@ const keys = {};
 
 // プレイヤークラス
 class Player {
-    constructor(x, y, color, controls, name, facing = 1) {
+    constructor(x, y, color, controls, name, facing = 1, isCPU = false) {
         this.x = x;
         this.y = y;
         this.width = 50;
@@ -28,6 +29,7 @@ class Player {
         this.controls = controls;
         this.name = name;
         this.facing = facing; // 1: 右向き, -1: 左向き
+        this.isCPU = isCPU;
         
         // 戦闘パラメータ
         this.health = 100;
@@ -66,6 +68,10 @@ class Player {
     }
     
     handleInput() {
+        if (this.isCPU) {
+            this.cpuBehavior();
+            return;
+        }
         if (this.isAttacking || this.health <= 0) return;
         
         // リセット状態
@@ -109,14 +115,32 @@ class Player {
         if (keys[this.controls.kick] && this.attackCooldown <= 0) {
             this.kick();
         }
-        
+
         // 画面端制限
         this.x = Math.max(0, Math.min(canvas.width - this.width, this.x));
-        
+
         // アイドル状態
-        if (!keys[this.controls.left] && !keys[this.controls.right] && 
+        if (!keys[this.controls.left] && !keys[this.controls.right] &&
             !keys[this.controls.down] && this.isGrounded && !this.isAttacking) {
             this.currentAction = 'idle';
+        }
+    }
+
+    cpuBehavior() {
+        const opponent = this === player1 ? player2 : player1;
+        if (Math.abs(this.x - opponent.x) > 60) {
+            if (this.x < opponent.x) {
+                this.x += this.speed;
+                this.currentAction = 'walk';
+            } else {
+                this.x -= this.speed;
+                this.currentAction = 'walk';
+            }
+        } else if (this.attackCooldown <= 0) {
+            this.punch();
+        }
+        if (this.isGrounded && Math.random() < 0.01) {
+            this.jump();
         }
     }
     
@@ -601,8 +625,10 @@ function restartGame() {
         player2Wins: 0,
         gameOver: false,
         roundOver: false,
-        paused: false
+        paused: false,
+        cpu: gameState.cpu
     };
+    player2.isCPU = gameState.cpu;
     
     // プレイヤーリセット
     player1.health = player1.maxHealth;
@@ -638,10 +664,9 @@ function restartGame() {
 
 // タッチ操作対応（スマホ用）
 function setupTouchControls() {
-    // 仮想ボタンを作成
     const touchControls = document.createElement('div');
     touchControls.className = 'touch-controls';
-    touchControls.innerHTML = `
+    let html = `
         <div class="player-controls" id="player1-touch">
             <h4>Player 1</h4>
             <div class="control-pad">
@@ -656,8 +681,9 @@ function setupTouchControls() {
                 <button class="btn-punch" data-key="KeyJ">パンチ</button>
                 <button class="btn-kick" data-key="KeyK">キック</button>
             </div>
-        </div>
-        
+        </div>`;
+    if (!gameState.cpu) {
+        html += `
         <div class="player-controls" id="player2-touch">
             <h4>Player 2</h4>
             <div class="control-pad">
@@ -672,14 +698,13 @@ function setupTouchControls() {
                 <button class="btn-punch" data-key="Digit1">パンチ</button>
                 <button class="btn-kick" data-key="Digit2">キック</button>
             </div>
-        </div>
-    `;
-    
-    // スマホの場合のみタッチコントロールを表示
+        </div>`;
+    }
+    touchControls.innerHTML = html;
+
     if (window.innerWidth <= 768) {
         document.body.appendChild(touchControls);
-        
-        // タッチイベント追加
+
         const buttons = touchControls.querySelectorAll('button');
         buttons.forEach(button => {
             button.addEventListener('touchstart', (e) => {
@@ -688,22 +713,21 @@ function setupTouchControls() {
                 keys[key] = true;
                 button.classList.add('pressed');
             });
-            
+
             button.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 const key = button.getAttribute('data-key');
                 keys[key] = false;
                 button.classList.remove('pressed');
             });
-            
-            // マウスイベントも追加（デバッグ用）
+
             button.addEventListener('mousedown', (e) => {
                 e.preventDefault();
                 const key = button.getAttribute('data-key');
                 keys[key] = true;
                 button.classList.add('pressed');
             });
-            
+
             button.addEventListener('mouseup', (e) => {
                 e.preventDefault();
                 const key = button.getAttribute('data-key');
@@ -870,9 +894,15 @@ function initGame() {
     gameLoop();
 }
 
-function startGame() {
+function startGame(useCpu) {
+    gameState.cpu = !!useCpu;
+    player2.isCPU = gameState.cpu;
     const startScreen = document.getElementById('start-screen');
     startScreen.style.display = 'none';
+    if (gameState.cpu) {
+        const sections = document.querySelectorAll('#controls .control-section');
+        if (sections[1]) sections[1].style.display = 'none';
+    }
     if (bgm) {
         bgm.currentTime = 0;
         bgm.play();
