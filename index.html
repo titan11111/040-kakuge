@@ -44,7 +44,10 @@
                     <h1>格闘ゲーム</h1>
                     <p>スト2風バトル</p>
                 </div>
-                <button class="start-btn" onclick="startGame()">ゲームスタート</button>
+                <div class="mode-select">
+                    <button class="start-btn" onclick="startGame(false)">2P対戦</button>
+                    <button class="start-btn" onclick="startGame(true)">CPU対戦</button>
+                </div>
                 <div class="instructions">
                     <h3>遊び方</h3>
                     <p>3ラウンド制で2ラウンド先取で勝利！</p>
@@ -130,7 +133,8 @@
             gameOver: false,
             roundOver: false,
             paused: false,
-            gameStarted: false
+            gameStarted: false,
+            cpu: false
         };
 
         // キー入力状態
@@ -138,7 +142,7 @@
 
         // プレイヤークラス
         class Player {
-            constructor(x, y, color, controls, name, facing = 1) {
+            constructor(x, y, color, controls, name, facing = 1, isCPU = false) {
                 this.x = x;
                 this.y = y;
                 this.width = 50;
@@ -147,6 +151,7 @@
                 this.controls = controls;
                 this.name = name;
                 this.facing = facing;
+                this.isCPU = isCPU;
                 
                 // 戦闘パラメータ
                 this.health = 100;
@@ -184,6 +189,10 @@
             }
             
             handleInput() {
+                if (this.isCPU) {
+                    this.cpuBehavior();
+                    return;
+                }
                 if (this.isAttacking || this.health <= 0) return;
                 
                 // リセット状態
@@ -235,6 +244,24 @@
                 if (!keys[this.controls.left] && !keys[this.controls.right] && 
                     !keys[this.controls.down] && this.isGrounded && !this.isAttacking) {
                     this.currentAction = 'idle';
+                }
+            }
+
+            cpuBehavior() {
+                const opponent = this === player1 ? player2 : player1;
+                if (Math.abs(this.x - opponent.x) > 60) {
+                    if (this.x < opponent.x) {
+                        this.x += this.speed;
+                        this.currentAction = 'walk';
+                    } else {
+                        this.x -= this.speed;
+                        this.currentAction = 'walk';
+                    }
+                } else if (this.attackCooldown <= 0) {
+                    this.punch();
+                }
+                if (this.isGrounded && Math.random() < 0.01) {
+                    this.jump();
                 }
             }
             
@@ -727,8 +754,10 @@
                 gameOver: false,
                 roundOver: false,
                 paused: false,
-                gameStarted: true
+                gameStarted: true,
+                cpu: gameState.cpu
             };
+            player2.isCPU = gameState.cpu;
             
             resetPlayers();
             
@@ -743,8 +772,10 @@
             effects.length = 0;
         }
 
-        function startGame() {
+        function startGame(useCpu) {
             gameState.gameStarted = true;
+            gameState.cpu = !!useCpu;
+            player2.isCPU = gameState.cpu;
             
             // スタート画面を隠す
             document.getElementById('start-screen').style.display = 'none';
@@ -753,6 +784,10 @@
             document.getElementById('gameCanvas').style.display = 'block';
             document.getElementById('game-info').style.display = 'flex';
             document.getElementById('controls').style.display = 'flex';
+            if (gameState.cpu) {
+                const sections = document.querySelectorAll('#controls .control-section');
+                if (sections[1]) sections[1].style.display = 'none';
+            }
             
             // ボタンを表示
             document.querySelector('.pause-btn').style.display = 'block';
@@ -840,7 +875,7 @@
             if (window.innerWidth <= 768) {
                 const touchControls = document.createElement('div');
                 touchControls.className = 'touch-controls';
-                touchControls.innerHTML = `
+                let controlsHTML = `
                     <div class="player-controls">
                         <h4>プレイヤー1</h4>
                         <div class="control-pad">
@@ -855,8 +890,9 @@
                             <button class="btn-punch" data-key="KeyJ">パンチ</button>
                             <button class="btn-kick" data-key="KeyK">キック</button>
                         </div>
-                    </div>
-                    
+                    </div>`;
+                if (!gameState.cpu) {
+                    controlsHTML += `
                     <div class="player-controls">
                         <h4>プレイヤー2</h4>
                         <div class="control-pad">
@@ -871,8 +907,9 @@
                             <button class="btn-punch" data-key="Digit1">パンチ</button>
                             <button class="btn-kick" data-key="Digit2">キック</button>
                         </div>
-                    </div>
-                `;
+                    </div>`;
+                }
+                touchControls.innerHTML = controlsHTML;
                 
                 document.body.appendChild(touchControls);
                 
@@ -1019,6 +1056,13 @@
             justify-content: center;
             align-items: center;
             border-radius: 7px;
+        }
+
+        .mode-select {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
         }
 
         .game-title h1 {
