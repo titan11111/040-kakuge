@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>格闘ゲーム - スト2風</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -139,6 +139,16 @@
 
         // キー入力状態
         const keys = {};
+
+        // ダブルタップによる画面のスクロールや拡大を防止
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, { passive: false });
 
         // プレイヤークラス
         class Player {

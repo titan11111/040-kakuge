@@ -18,6 +18,16 @@ let gameState = {
 // キー入力状態
 const keys = {};
 
+// ダブルタップによる画面のスクロールや拡大を防止
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, { passive: false });
+
 // プレイヤークラス
 class Player {
     constructor(x, y, color, controls, name, facing = 1, isCPU = false) {

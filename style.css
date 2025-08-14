@@ -9,6 +9,7 @@ body {
   background: linear-gradient(135deg, #1a1a2e, #16213e);
   color: white;
   overflow: hidden;
+  touch-action: manipulation;
 }
 
 .game-container {
