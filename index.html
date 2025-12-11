@@ -165,34 +165,89 @@
         .mobile-controls {
             display: none;
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 0;
             right: 0;
             justify-content: space-between;
-            padding: 0 20px;
+            align-items: flex-end;
+            padding: 0 15px;
             pointer-events: auto;
+            z-index: 100;
         }
         
         .control-group {
             display: flex;
-            gap: 10px;
-            flex-direction: column;
+            gap: 8px;
             align-items: center;
+        }
+        
+        .dpad-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 4px;
+            width: 90px;
+            height: 90px;
+            position: relative;
+        }
+        
+        .dpad-btn {
+            grid-column: span 1;
+            grid-row: span 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            user-select: none;
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .dpad-btn.empty {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            pointer-events: none;
+        }
+        
+        .dpad-btn.up { grid-column: 2; grid-row: 1; }
+        .dpad-btn.left { grid-column: 1; grid-row: 2; }
+        .dpad-btn.down { grid-column: 2; grid-row: 3; }
+        .dpad-btn.right { grid-column: 3; grid-row: 2; }
+        
+        .dpad-btn:active,
+        .dpad-btn.touching {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.9);
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
         
         .btn-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
         
         .control-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.25);
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            border-radius: 12px;
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
             color: white;
-            font-size: 14px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
             touch-action: manipulation;
@@ -202,17 +257,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(8px);
             transition: all 0.1s ease;
             position: relative;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            line-height: 1.2;
         }
         
         .control-btn:active,
         .control-btn.touching {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.4);
             transform: scale(0.9);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
         
         .restart-btn {
@@ -273,66 +330,22 @@
             }
             
             .control-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 14px;
-                border-width: 3px;
+                width: 50px;
+                height: 50px;
+                font-size: 10px;
             }
             
-            #ui {
-                padding: 15px;
+            .dpad-container {
+                width: 80px;
+                height: 80px;
             }
             
-            .player-name {
-                font-size: 18px;
-            }
-            
-            #timer {
-                font-size: 36px;
-                top: 50px;
-            }
-            
-            .health-bar {
-                height: 25px;
-            }
-            
-            .combo-display {
-                font-size: 20px;
-            }
-        }
-        
-        /* iOS向けの特別なスタイル */
-        @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
-            .control-btn {
-                width: 75px;
-                height: 75px;
+            .dpad-btn {
                 font-size: 16px;
             }
             
-            .mobile-controls {
-                padding: 0 15px;
-                bottom: 15px;
-            }
-        }
-        
-        /* 小さい画面向け */
-        @media (max-width: 480px) {
-            .control-btn {
-                width: 65px;
-                height: 65px;
-                font-size: 12px;
-            }
-            
-            .btn-row {
-                gap: 8px;
-            }
-            
-            .control-group {
-                gap: 8px;
-            }
-            
             #ui {
-                padding: 10px;
+                padding: 12px;
             }
             
             .player-name {
@@ -341,28 +354,117 @@
             
             #timer {
                 font-size: 32px;
+                top: 45px;
+            }
+            
+            .health-bar {
+                height: 22px;
+            }
+            
+            .combo-display {
+                font-size: 18px;
+            }
+        }
+        
+        /* iOS向けの特別なスタイル */
+        @media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+            .control-btn {
+                width: 52px;
+                height: 52px;
+                font-size: 11px;
+            }
+            
+            .dpad-container {
+                width: 85px;
+                height: 85px;
+            }
+            
+            .mobile-controls {
+                padding: 0 12px;
+                bottom: 12px;
+            }
+        }
+        
+        /* 小さい画面向け */
+        @media (max-width: 480px) {
+            .control-btn {
+                width: 48px;
+                height: 48px;
+                font-size: 9px;
+            }
+            
+            .dpad-container {
+                width: 75px;
+                height: 75px;
+            }
+            
+            .dpad-btn {
+                font-size: 14px;
+            }
+            
+            .btn-row {
+                gap: 6px;
+            }
+            
+            .action-buttons {
+                gap: 6px;
+            }
+            
+            .mobile-controls {
+                padding: 0 10px;
+                bottom: 10px;
+            }
+            
+            #ui {
+                padding: 8px;
+            }
+            
+            .player-name {
+                font-size: 14px;
+            }
+            
+            #timer {
+                font-size: 28px;
             }
         }
         
         /* 横向き（ランドスケープ）向け */
         @media (max-height: 500px) and (orientation: landscape) {
             .mobile-controls {
-                bottom: 10px;
+                bottom: 8px;
                 padding: 0 10px;
             }
             
             .control-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 12px;
+                width: 45px;
+                height: 45px;
+                font-size: 9px;
+            }
+            
+            .dpad-container {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .dpad-btn {
+                font-size: 13px;
             }
             
             #ui {
-                padding: 10px;
+                padding: 8px;
             }
             
             .health-bar {
-                height: 20px;
+                height: 18px;
+            }
+            
+            .player-name {
+                font-size: 14px;
+            }
+            
+            #timer {
+                font-size: 24px;
+                top: 35px;
             }
         }
         
@@ -874,35 +976,27 @@
     </div>
     
     <div class="mobile-controls">
+        <!-- 左側：Dパッド風の十字キー -->
         <div class="control-group">
-            <div class="btn-row">
-                <button class="control-btn" id="p1Up">↑</button>
-            </div>
-            <div class="btn-row">
-                <button class="control-btn" id="p1Left">←</button>
-                <button class="control-btn" id="p1Down">↓</button>
-                <button class="control-btn" id="p1Right">→</button>
-            </div>
-            <div class="btn-row">
-                <button class="control-btn" id="p1Punch">M<br>パンチ</button>
-                <button class="control-btn" id="p1Kick">N<br>キック</button>
-                <button class="control-btn" id="p1Special">B<br>必殺</button>
+            <div class="dpad-container">
+                <div class="dpad-btn empty"></div>
+                <button class="dpad-btn up" id="p1Up">↑</button>
+                <div class="dpad-btn empty"></div>
+                <button class="dpad-btn left" id="p1Left">←</button>
+                <div class="dpad-btn empty"></div>
+                <button class="dpad-btn right" id="p1Right">→</button>
+                <div class="dpad-btn empty"></div>
+                <button class="dpad-btn down" id="p1Down">↓</button>
+                <div class="dpad-btn empty"></div>
             </div>
         </div>
         
+        <!-- 右側：アクションボタン -->
         <div class="control-group">
-            <div class="btn-row">
-                <button class="control-btn" id="p2Up">↑</button>
-            </div>
-            <div class="btn-row">
-                <button class="control-btn" id="p2Left">←</button>
-                <button class="control-btn" id="p2Down">↓</button>
-                <button class="control-btn" id="p2Right">→</button>
-            </div>
-            <div class="btn-row">
-                <button class="control-btn" id="p2Punch">G<br>パンチ</button>
-                <button class="control-btn" id="p2Kick">H<br>キック</button>
-                <button class="control-btn" id="p2Special">J<br>必殺</button>
+            <div class="action-buttons">
+                <button class="control-btn" id="p1Punch">パンチ</button>
+                <button class="control-btn" id="p1Kick">キック</button>
+                <button class="control-btn" id="p1Special">必殺</button>
             </div>
         </div>
     </div>
@@ -4141,14 +4235,7 @@
             p1Right: 'ArrowRight',
             p1Punch: 'KeyM',
             p1Kick: 'KeyN',
-            p1Special: 'KeyB',
-            p2Up: 'KeyW',
-            p2Down: 'KeyS',
-            p2Left: 'KeyA',
-            p2Right: 'KeyD',
-            p2Punch: 'KeyG',
-            p2Kick: 'KeyH',
-            p2Special: 'KeyJ'
+            p1Special: 'KeyB'
         };
         
         // タッチイベントハンドラー（iOS対応強化）
