@@ -192,6 +192,34 @@
             position: relative;
         }
         
+        #leftControllerArea {
+            display: none;
+            width: auto;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            border-right: 2px solid rgba(255, 255, 255, 0.2);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #rightControllerArea {
+            display: none;
+            width: auto;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            border-left: 2px solid rgba(255, 255, 255, 0.2);
+            justify-content: center;
+            align-items: center;
+        }
+        
         .mobile-controls {
             display: flex;
             justify-content: space-between;
@@ -494,41 +522,36 @@
             }
             
             #controllerArea {
+                display: none;
+            }
+            
+            #leftControllerArea {
                 display: flex;
                 width: auto;
-                height: 100vh;
-                min-width: 200px;
-                max-width: 280px;
-                border-top: none;
-                border-left: 2px solid rgba(255, 255, 255, 0.2);
-                padding: 20px 15px;
+                min-width: 180px;
+                max-width: 220px;
+            }
+            
+            #rightControllerArea {
+                display: flex;
+                width: auto;
+                min-width: 180px;
+                max-width: 220px;
             }
             
             #gameArea {
                 flex: 1;
                 height: 100vh;
                 min-width: 0;
+                order: 2;
             }
             
-            .mobile-controls {
-                flex-direction: column;
-                justify-content: center;
-                gap: 30px;
+            #leftControllerArea {
+                order: 1;
             }
             
-            .control-group {
-                flex-direction: column;
-                max-width: 100%;
-            }
-            
-            .control-group.left {
-                justify-content: center;
-                align-items: center;
-            }
-            
-            .control-group.right {
-                justify-content: center;
-                align-items: center;
+            #rightControllerArea {
+                order: 3;
             }
             
             .circular-controller {
@@ -543,7 +566,7 @@
             }
             
             .action-buttons {
-                flex-direction: row;
+                flex-direction: column;
                 gap: 15px;
             }
             
@@ -567,9 +590,15 @@
         
         /* 小さい横画面向け */
         @media (max-height: 500px) and (orientation: landscape) {
-            #controllerArea {
-                min-width: 160px;
-                max-width: 220px;
+            #leftControllerArea {
+                min-width: 140px;
+                max-width: 180px;
+                padding: 10px;
+            }
+            
+            #rightControllerArea {
+                min-width: 140px;
+                max-width: 180px;
                 padding: 10px;
             }
             
@@ -1052,17 +1081,17 @@
                 </div>
             </div>
         </div>
-            </div>
-            
+    </div>
+
             <button class="start-game-btn" id="startGameBtn" disabled>⚔️ ゲーム開始 ⚔️</button>
         </div>
     </div>
 
     <div id="gameContainer">
         <div id="gameArea">
-            <canvas id="gameCanvas"></canvas>
-            
-            <div id="ui">
+    <canvas id="gameCanvas"></canvas>
+    
+    <div id="ui">
         <div class="health-container">
             <div class="player-info-left">
             <div class="player-name player1-name" id="player1Name">プレイヤー1</div>
@@ -1110,26 +1139,27 @@
                 </div>
             </div>
             <div class="player-info-right">
-                <div class="player-name player2-name" id="player2Name">プレイヤー2</div>
+            <div class="player-name player2-name" id="player2Name">プレイヤー2</div>
                 <div class="combo-display" id="player2Combo"></div>
             </div>
         </div>
-        </div>
+    </div>
     
-        <div id="controls">
-            <button class="restart-btn" onclick="location.reload()">リスタート</button>
-        </div>
-        </div>
-        
+    <div id="controls">
+        <button class="restart-btn" onclick="location.reload()">リスタート</button>
+    </div>
+    </div>
+    
+        <!-- 縦画面用コントローラー（下部） -->
         <div id="controllerArea">
-            <div class="mobile-controls">
+    <div class="mobile-controls">
                 <!-- 左側：円形コントローラー（アナログスティック風） -->
                 <div class="control-group left">
                     <div class="circular-controller" id="p1CircularController">
                         <div class="circular-controller-base">
                             <div class="circular-controller-stick"></div>
-                        </div>
-                    </div>
+            </div>
+            </div>
                 </div>
         
                 <!-- 右側：アクションボタン -->
@@ -1140,6 +1170,24 @@
                         <button class="control-btn" id="p1Special">必殺</button>
                     </div>
                 </div>
+            </div>
+        </div>
+        
+        <!-- 横画面用：左側コントローラー（円形コントローラーのみ） -->
+        <div id="leftControllerArea">
+            <div class="circular-controller" id="p1CircularControllerLandscape">
+                <div class="circular-controller-base">
+                    <div class="circular-controller-stick"></div>
+            </div>
+            </div>
+        </div>
+        
+        <!-- 横画面用：右側コントローラー（アクションボタンのみ） -->
+        <div id="rightControllerArea">
+            <div class="action-buttons">
+                <button class="control-btn" id="p1PunchLandscape">パンチ</button>
+                <button class="control-btn" id="p1KickLandscape">キック</button>
+                <button class="control-btn" id="p1SpecialLandscape">必殺</button>
             </div>
         </div>
     </div>
@@ -1187,7 +1235,7 @@
         
         // 初期化とリサイズ処理
         function initLayout() {
-            resizeCanvas();
+        resizeCanvas();
         }
         
         initLayout();
@@ -4489,7 +4537,7 @@
             }
             
             function handleStart(e) {
-                e.preventDefault();
+                    e.preventDefault();
                 e.stopPropagation();
                 isActive = true;
                 controller.classList.add('active');
@@ -4595,14 +4643,24 @@
         }
         
         // モバイルコントローラの初期化
-        // 円形コントローラーの初期化
+        // 円形コントローラーの初期化（縦画面用と横画面用）
         initCircularController('p1CircularController');
+        initCircularController('p1CircularControllerLandscape');
         
-        // アクションボタンの初期化
-        Object.keys(mobileControls).forEach(btnId => {
+        // アクションボタンの初期化（縦画面用と横画面用）
+        const buttonMappings = {
+            'p1Punch': 'KeyM',
+            'p1Kick': 'KeyN',
+            'p1Special': 'KeyB',
+            'p1PunchLandscape': 'KeyM',
+            'p1KickLandscape': 'KeyN',
+            'p1SpecialLandscape': 'KeyB'
+        };
+        
+        Object.keys(buttonMappings).forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (btn) {
-                const key = mobileControls[btnId];
+                const key = buttonMappings[btnId];
                 
                 btn.addEventListener('touchstart', (e) => handleTouchStart(e, key), { passive: false });
                 btn.addEventListener('touchend', (e) => handleTouchEnd(e, key), { passive: false });
@@ -4617,7 +4675,7 @@
         // 画面外タッチ時の処理（iOS対応）
         document.addEventListener('touchmove', (e) => {
             if (e.target === canvas || e.target.closest('.mobile-controls')) {
-                e.preventDefault();
+                    e.preventDefault();
             }
         }, { passive: false });
         
