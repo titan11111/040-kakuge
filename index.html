@@ -184,75 +184,76 @@
         #controllerArea {
             display: none;
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(10px);
-            border-top: 2px solid rgba(255, 255, 255, 0.2);
             padding: 15px;
             box-sizing: border-box;
+            position: relative;
         }
         
         .mobile-controls {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 100%;
-            margin: 0 auto;
+            width: 100%;
+            height: 100%;
             pointer-events: auto;
+            gap: 20px;
         }
         
         .control-group {
             display: flex;
-            gap: 8px;
+            gap: 15px;
             align-items: center;
+            flex: 1;
+            max-width: 50%;
         }
         
-        .dpad-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
-            width: 120px;
-            height: 120px;
+        .control-group.left {
+            justify-content: flex-start;
+        }
+        
+        .control-group.right {
+            justify-content: flex-end;
+        }
+        
+        /* 円形コントローラー（アナログスティック風） */
+        .circular-controller {
             position: relative;
+            width: 140px;
+            height: 140px;
             flex-shrink: 0;
         }
         
-        .dpad-btn {
-            grid-column: span 1;
-            grid-row: span 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.25);
-            border: 3px solid rgba(255, 255, 255, 0.6);
-            border-radius: 10px;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-touch-callout: none;
-            user-select: none;
-            transition: all 0.1s ease;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+        .circular-controller-base {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
         
-        .dpad-btn.empty {
-            background: transparent;
-            border: none;
-            box-shadow: none;
+        .circular-controller-stick {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
             pointer-events: none;
         }
         
-        .dpad-btn.up { grid-column: 2; grid-row: 1; }
-        .dpad-btn.left { grid-column: 1; grid-row: 2; }
-        .dpad-btn.down { grid-column: 2; grid-row: 3; }
-        .dpad-btn.right { grid-column: 3; grid-row: 2; }
-        
-        .dpad-btn:active,
-        .dpad-btn.touching {
-            background: rgba(255, 255, 255, 0.4);
-            transform: scale(0.9);
+        .circular-controller.active .circular-controller-stick {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
         }
         
         .action-buttons {
@@ -486,34 +487,110 @@
             }
         }
         
-        /* 横向き（ランドスケープ）向け */
-        @media (max-height: 500px) and (orientation: landscape) {
+        /* 横向き（ランドスケープ）向け - 優先レイアウト */
+        @media (orientation: landscape) {
+            #gameContainer {
+                flex-direction: row;
+            }
+            
             #controllerArea {
-                height: 35vh;
-                min-height: 140px;
+                display: flex;
+                width: auto;
+                height: 100vh;
+                min-width: 200px;
+                max-width: 280px;
+                border-top: none;
+                border-left: 2px solid rgba(255, 255, 255, 0.2);
+                padding: 20px 15px;
             }
             
             #gameArea {
-                height: 65vh;
+                flex: 1;
+                height: 100vh;
+                min-width: 0;
+            }
+            
+            .mobile-controls {
+                flex-direction: column;
+                justify-content: center;
+                gap: 30px;
+            }
+            
+            .control-group {
+                flex-direction: column;
+                max-width: 100%;
+            }
+            
+            .control-group.left {
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .control-group.right {
+                justify-content: center;
+                align-items: center;
+            }
+            
+            .circular-controller {
+                width: 150px;
+                height: 150px;
             }
             
             .control-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 11px;
+                width: 80px;
+                height: 80px;
+                font-size: 14px;
             }
             
-            .dpad-container {
-                width: 90px;
-                height: 90px;
+            .action-buttons {
+                flex-direction: row;
+                gap: 15px;
             }
             
-            .dpad-btn {
-                font-size: 18px;
-            }
-            
-            #controllerArea {
+            #ui {
                 padding: 10px;
+            }
+            
+            .health-bar {
+                height: 18px;
+            }
+            
+            .player-name {
+                font-size: 14px;
+            }
+            
+            #timer {
+                font-size: 24px;
+                top: 40px;
+            }
+        }
+        
+        /* 小さい横画面向け */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #controllerArea {
+                min-width: 160px;
+                max-width: 220px;
+                padding: 10px;
+            }
+            
+            .circular-controller {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .circular-controller-stick {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .control-btn {
+                width: 65px;
+                height: 65px;
+                font-size: 12px;
+            }
+            
+            .action-buttons {
+                gap: 10px;
             }
             
             #ui {
@@ -1046,30 +1123,24 @@
         
         <div id="controllerArea">
             <div class="mobile-controls">
-                <!-- 左側：Dパッド風の十字キー -->
-                <div class="control-group">
-            <div class="dpad-container">
-                <div class="dpad-btn empty"></div>
-                <button class="dpad-btn up" id="p1Up">↑</button>
-                <div class="dpad-btn empty"></div>
-                <button class="dpad-btn left" id="p1Left">←</button>
-                <div class="dpad-btn empty"></div>
-                <button class="dpad-btn right" id="p1Right">→</button>
-                <div class="dpad-btn empty"></div>
-                <button class="dpad-btn down" id="p1Down">↓</button>
-                <div class="dpad-btn empty"></div>
-            </div>
+                <!-- 左側：円形コントローラー（アナログスティック風） -->
+                <div class="control-group left">
+                    <div class="circular-controller" id="p1CircularController">
+                        <div class="circular-controller-base">
+                            <div class="circular-controller-stick"></div>
+                        </div>
+                    </div>
                 </div>
         
                 <!-- 右側：アクションボタン -->
-                <div class="control-group">
-            <div class="action-buttons">
-                <button class="control-btn" id="p1Punch">パンチ</button>
-                <button class="control-btn" id="p1Kick">キック</button>
-                <button class="control-btn" id="p1Special">必殺</button>
+                <div class="control-group right">
+                    <div class="action-buttons">
+                        <button class="control-btn" id="p1Punch">パンチ</button>
+                        <button class="control-btn" id="p1Kick">キック</button>
+                        <button class="control-btn" id="p1Special">必殺</button>
+                    </div>
                 </div>
             </div>
-        </div>
         </div>
     </div>
     
@@ -4319,24 +4390,171 @@
             keys[e.code] = false;
         });
         
-        // モバイルコントロール
+        // モバイルコントロール（アクションボタン用）
         const mobileControls = {
-            p1Up: 'ArrowUp',
-            p1Down: 'ArrowDown',
-            p1Left: 'ArrowLeft',
-            p1Right: 'ArrowRight',
             p1Punch: 'KeyM',
             p1Kick: 'KeyN',
             p1Special: 'KeyB'
         };
         
-        // タッチイベントハンドラー（iOS対応強化）
+        // 円形コントローラー（アナログスティック風）の実装
+        function initCircularController(controllerId) {
+            const controller = document.getElementById(controllerId);
+            if (!controller) return;
+            
+            const base = controller.querySelector('.circular-controller-base');
+            const stick = controller.querySelector('.circular-controller-stick');
+            if (!base || !stick) return;
+            
+            const rect = base.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const radius = rect.width / 2 - 10; // マージンを考慮
+            
+            let isActive = false;
+            let currentKeys = {
+                'ArrowUp': false,
+                'ArrowDown': false,
+                'ArrowLeft': false,
+                'ArrowRight': false
+            };
+            
+            function getTouchPos(e) {
+                const touch = e.touches ? e.touches[0] : e;
+                return {
+                    x: touch.clientX,
+                    y: touch.clientY
+                };
+            }
+            
+            function updateStickPosition(dx, dy, distance) {
+                const maxDistance = radius - 30; // スティックの半径を考慮
+                const clampedDistance = Math.min(distance, maxDistance);
+                
+                if (clampedDistance > 5) { // デッドゾーン
+                    const angle = Math.atan2(dy, dx);
+                    const x = Math.cos(angle) * clampedDistance;
+                    const y = Math.sin(angle) * clampedDistance;
+                    
+                    stick.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+                    
+                    // 8方向入力の判定（角度から方向を決定）
+                    const angleDeg = (angle * 180 / Math.PI + 360) % 360;
+                    const directions = {
+                        'ArrowUp': (angleDeg >= 45 && angleDeg < 135),
+                        'ArrowDown': (angleDeg >= 225 && angleDeg < 315),
+                        'ArrowLeft': (angleDeg >= 135 && angleDeg < 225),
+                        'ArrowRight': (angleDeg >= 315 || angleDeg < 45)
+                    };
+                    
+                    // 斜め方向の処理
+                    if (Math.abs(dx) > Math.abs(dy) * 0.5 && Math.abs(dy) > Math.abs(dx) * 0.5) {
+                        // 斜め方向
+                        if (dy < 0 && dx < 0) {
+                            // 左上
+                            directions['ArrowUp'] = true;
+                            directions['ArrowLeft'] = true;
+                        } else if (dy < 0 && dx > 0) {
+                            // 右上
+                            directions['ArrowUp'] = true;
+                            directions['ArrowRight'] = true;
+                        } else if (dy > 0 && dx < 0) {
+                            // 左下
+                            directions['ArrowDown'] = true;
+                            directions['ArrowLeft'] = true;
+                        } else if (dy > 0 && dx > 0) {
+                            // 右下
+                            directions['ArrowDown'] = true;
+                            directions['ArrowRight'] = true;
+                        }
+                    }
+                    
+                    // キーの状態を更新
+                    Object.keys(directions).forEach(key => {
+                        if (directions[key] !== currentKeys[key]) {
+                            currentKeys[key] = directions[key];
+                            keys[key] = directions[key];
+                        }
+                    });
+                } else {
+                    // 中心に戻す
+                    stick.style.transform = 'translate(-50%, -50%)';
+                    Object.keys(currentKeys).forEach(key => {
+                        if (currentKeys[key]) {
+                            currentKeys[key] = false;
+                            keys[key] = false;
+                        }
+                    });
+                }
+            }
+            
+            function handleStart(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                isActive = true;
+                controller.classList.add('active');
+                
+                const pos = getTouchPos(e);
+                const rect = base.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const dx = pos.x - centerX;
+                const dy = pos.y - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                updateStickPosition(dx, dy, distance);
+            }
+            
+            function handleMove(e) {
+                if (!isActive) return;
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const pos = getTouchPos(e);
+                const rect = base.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const dx = pos.x - centerX;
+                const dy = pos.y - centerY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                updateStickPosition(dx, dy, distance);
+            }
+            
+            function handleEnd(e) {
+                if (!isActive) return;
+                e.preventDefault();
+                e.stopPropagation();
+                
+                isActive = false;
+                controller.classList.remove('active');
+                stick.style.transform = 'translate(-50%, -50%)';
+                
+                // すべてのキーをリセット
+                Object.keys(currentKeys).forEach(key => {
+                    currentKeys[key] = false;
+                    keys[key] = false;
+                });
+            }
+            
+            // タッチイベント
+            base.addEventListener('touchstart', handleStart, { passive: false });
+            document.addEventListener('touchmove', handleMove, { passive: false });
+            document.addEventListener('touchend', handleEnd, { passive: false });
+            document.addEventListener('touchcancel', handleEnd, { passive: false });
+            
+            // マウスイベント（デスクトップ対応）
+            base.addEventListener('mousedown', handleStart);
+            document.addEventListener('mousemove', handleMove);
+            document.addEventListener('mouseup', handleEnd);
+        }
+        
+        // タッチイベントハンドラー（アクションボタン用）
         function handleTouchStart(e, key) {
             e.preventDefault();
             e.stopPropagation();
             keys[key] = true;
             
-            // 視覚的フィードバック
             const target = e.currentTarget;
             target.classList.add('touching');
         }
@@ -4346,7 +4564,6 @@
             e.stopPropagation();
             keys[key] = false;
             
-            // 視覚的フィードバック解除
             const target = e.currentTarget;
             target.classList.remove('touching');
         }
@@ -4356,12 +4573,10 @@
             e.stopPropagation();
             keys[key] = false;
             
-            // 視覚的フィードバック解除
             const target = e.currentTarget;
             target.classList.remove('touching');
         }
         
-        // iOS向けのマウスイベントもサポート（タッチとマウスの両方に対応）
         function handleMouseDown(e, key) {
             e.preventDefault();
             keys[key] = true;
@@ -4380,17 +4595,19 @@
         }
         
         // モバイルコントローラの初期化
+        // 円形コントローラーの初期化
+        initCircularController('p1CircularController');
+        
+        // アクションボタンの初期化
         Object.keys(mobileControls).forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (btn) {
                 const key = mobileControls[btnId];
                 
-                // タッチイベント（iOS対応）
                 btn.addEventListener('touchstart', (e) => handleTouchStart(e, key), { passive: false });
                 btn.addEventListener('touchend', (e) => handleTouchEnd(e, key), { passive: false });
                 btn.addEventListener('touchcancel', (e) => handleTouchCancel(e, key), { passive: false });
                 
-                // マウスイベント（デスクトップ対応）
                 btn.addEventListener('mousedown', (e) => handleMouseDown(e, key));
                 btn.addEventListener('mouseup', (e) => handleMouseUp(e, key));
                 btn.addEventListener('mouseleave', (e) => handleMouseLeave(e, key));
