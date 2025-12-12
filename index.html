@@ -4450,14 +4450,13 @@
             const controller = document.getElementById(controllerId);
             if (!controller) return;
             
+            // 既に初期化済みかチェック（重複登録を防ぐ）
+            if (controller.dataset.initialized === 'true') return;
+            controller.dataset.initialized = 'true';
+            
             const base = controller.querySelector('.circular-controller-base');
             const stick = controller.querySelector('.circular-controller-stick');
             if (!base || !stick) return;
-            
-            const rect = base.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const radius = rect.width / 2 - 10; // マージンを考慮
             
             let isActive = false;
             let currentKeys = {
@@ -4475,7 +4474,7 @@
                 };
             }
             
-            function updateStickPosition(dx, dy, distance) {
+            function updateStickPosition(dx, dy, distance, radius) {
                 const maxDistance = radius - 30; // スティックの半径を考慮
                 const clampedDistance = Math.min(distance, maxDistance);
                 
@@ -4537,7 +4536,7 @@
             }
             
             function handleStart(e) {
-                    e.preventDefault();
+                e.preventDefault();
                 e.stopPropagation();
                 isActive = true;
                 controller.classList.add('active');
@@ -4546,11 +4545,12 @@
                 const rect = base.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
+                const radius = rect.width / 2 - 10; // マージンを考慮（毎回計算）
                 const dx = pos.x - centerX;
                 const dy = pos.y - centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                updateStickPosition(dx, dy, distance);
+                updateStickPosition(dx, dy, distance, radius);
             }
             
             function handleMove(e) {
@@ -4562,11 +4562,12 @@
                 const rect = base.getBoundingClientRect();
                 const centerX = rect.left + rect.width / 2;
                 const centerY = rect.top + rect.height / 2;
+                const radius = rect.width / 2 - 10; // マージンを考慮（毎回計算）
                 const dx = pos.x - centerX;
                 const dy = pos.y - centerY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                updateStickPosition(dx, dy, distance);
+                updateStickPosition(dx, dy, distance, radius);
             }
             
             function handleEnd(e) {
@@ -4643,9 +4644,20 @@
         }
         
         // モバイルコントローラの初期化
-        // 円形コントローラーの初期化（縦画面用と横画面用）
-        initCircularController('p1CircularController');
-        initCircularController('p1CircularControllerLandscape');
+        // DOMが完全に読み込まれてから初期化（携帯での反応不良を防ぐ）
+        function initializeMobileControllers() {
+            // 円形コントローラーの初期化（縦画面用と横画面用）
+            initCircularController('p1CircularController');
+            initCircularController('p1CircularControllerLandscape');
+        }
+        
+        // DOMContentLoadedで初期化を実行
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeMobileControllers);
+        } else {
+            // 既に読み込み済みの場合は少し遅延させて初期化（レンダリング完了を待つ）
+            setTimeout(initializeMobileControllers, 100);
+        }
         
         // アクションボタンの初期化（縦画面用と横画面用）
         const buttonMappings = {
